@@ -97,7 +97,5 @@ if ( is_admin() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) ) {
 }
 
 // Rest API interface
-if( get_current_blog_id() == get_site_option( "fom_options", array("site"=>null) )['site'] ){
-    require_once( plugin_dir_path( __FILE__ ) . 'admin/class-rest.php' );
-    add_action( 'plugins_loaded', array( 'WPCampus_showcase_rest', 'get_instance' ) );
-}
+require_once( plugin_dir_path( __FILE__ ) . 'admin/class-rest.php' );
+add_action( 'plugins_loaded', array( 'WPCampus_showcase_rest', 'get_instance' ) );

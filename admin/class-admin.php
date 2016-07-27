@@ -113,7 +113,7 @@ class WPCampus_showcase_admin {
         $site->add_field( array(
             'name' => 'Additional Screenshots',
             'desc' => '',
-            'id'   =>  $prefix . 'square_image',
+            'id'   =>  $prefix . 'screenshots',
             'type' => 'file_list',
             'options' => array(
                 'url' => false, // Hide the text input for the url

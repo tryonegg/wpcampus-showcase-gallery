@@ -4,14 +4,15 @@ class WPCampus_showcase_rest {
 
 	protected static $instance = null;
 	protected $plugin_screen_hook_suffix = null;
-	public $updatePending = false;
-	private $enabeled = false;
+	private $prefix = null;
+    
 
 	private function __construct() {
 
 		$plugin = WPCampus_showcase::get_instance();
 		$this->version = WPCampus_showcase::VERSION;
 		$this->plugin_slug = $plugin->get_plugin_slug();
+        $this->prefix = $plugin->get_prefix();
 
         //register our end point
         add_action( 'rest_api_init', array( $this, 'register_routes' ) );
@@ -53,7 +54,7 @@ class WPCampus_showcase_rest {
 		) );
 		
 		// get N random sites 
-		register_rest_route( 'wpcampus/v1/', '/showcases/random/(?P<amount>\d+)', array(
+		register_rest_route( 'wpcampus/v1/', '/showcase/random/(?P<amount>\d+)', array(
 			'methods' => WP_REST_Server::READABLE,
 			'callback' => array( $this, 'get_sites' ),
 		) );
@@ -119,22 +120,16 @@ class WPCampus_showcase_rest {
 		
 		$site = (object) array(
 			"title" => $post->post_title,
-			"url" =>  get_the_permalink($post->ID),
-			"image" => get_the_post_thumbnail_url($post->ID, 'fom-large'),
-			"img" => get_the_post_thumbnail($post->ID, 'fom-large'),
-			"name" => (object) array(
-				"prefix" => get_post_meta($post->ID, $this->get_prefix() . 'prefix', true),
-				"first" => get_post_meta($post->ID, $this->get_prefix() . 'first', true),
-				"middle" => get_post_meta($post->ID, $this->get_prefix() . 'middle', true),
-				"last" => get_post_meta($post->ID, $this->get_prefix() . 'last', true),
-				"suffix" => get_post_meta($post->ID, $this->get_prefix() . 'suffix', true)
-			),
-			"hometown" => get_post_meta($post->ID, $this->get_prefix() . 'home', true),
-			"classyear" => get_post_meta($post->ID, $this->get_prefix() . 'classyear', true),
-			"degreeprogram" => get_post_meta($post->ID, $this->get_prefix() . 'degreeprogram', true),
-
+			"url" =>  get_the_permalink( $post->ID ),
+			"siteurl" => get_post_meta($post->ID, $this->get_prefix() . 'url', true),
+	        "organization" => get_post_meta($post->ID, $this->get_prefix() . 'organization', true),
+	        "team" => get_post_meta($post->ID, $this->get_prefix() . 'team', true),
+   			"description" => wpautop( $post->post_content ),
+			"thumbnail" => get_the_post_thumbnail_url( $post->ID, 'fom-large' ),
+			"thumbnailsrc" => get_the_post_thumbnail( $post->ID, 'fom-large' ),
 			"type" => $this->objtoarray( $this->termmap( wp_get_post_terms( $post->ID, 'type', array( "fields" => "all" ) ) ) ),
-			
+
+
 		);
 				
         return $site; 
