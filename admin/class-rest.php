@@ -42,19 +42,13 @@ class WPCampus_showcase_rest {
 		) );
 		
 		// get a specific sute
-		register_rest_route( 'wpcampus/v1/', '/showcase/(?P<id>\d+)', array(
+		register_rest_route( 'wpcampus/v1/', '/showcase/site/(?P<id>\d+)', array(
 			'methods' => WP_REST_Server::READABLE,
 			'callback' => array( $this, 'get_site' ),
 		) );
-		
-		// get a set of 3 random sites
-		register_rest_route( 'wpcampus/v1', '/showcase/random', array(
-			'methods' => WP_REST_Server::READABLE,
-			'callback' => array( $this, 'get_sites' ),
-		) );
-		
+			
 		// get N random sites 
-		register_rest_route( 'wpcampus/v1/', '/showcase/random/(?P<amount>\d+)', array(
+		register_rest_route( 'wpcampus/v1/', '/showcase/(?P<amount>\d+)', array(
 			'methods' => WP_REST_Server::READABLE,
 			'callback' => array( $this, 'get_sites' ),
 		) );
@@ -63,27 +57,32 @@ class WPCampus_showcase_rest {
 
     //do this when the end point is called
 	public function get_site( $request ) {
-
-        $args = array( 
-			'post_type' => 'showcase', 
-			'posts_per_page' => 1, 
-			'orderby' => 'rand' 
-		);
-
-		if( isset($request['amount']) ){
-			$args['posts_per_page'] = intval( $request['amount'] ); 
-		}
-		
-		if( isset($request['id']) ){
-			$args['ID'] = intval( $request['id'] ); 
-			unset($args['orderby']);
-		}
-
-        $rand_posts = get_posts( $args );
-
 		$sites = array();
-		foreach ($rand_posts as $post) {
-			$sites[] = $this->format_site($post);
+
+		// grab a specific site
+		if( isset($request['id']) ){
+
+			$sites[] = $this->format_site( get_post( intval( $request['id'] ) ));
+
+		// get some random sites
+		} else {
+
+			$args = array( 
+				'post_type' => 'showcase', 
+				'posts_per_page' => 1, 
+				'orderby' => 'rand' 
+			);
+
+			if( isset($request['amount']) ){
+				$args['posts_per_page'] = intval( $request['amount'] ); 
+			}
+
+			$posts = get_posts( $args );
+
+			foreach ($posts as $post) {
+				$sites[] = $this->format_site( $post );
+			}
+
 		}
 
         return $sites;
@@ -92,7 +91,7 @@ class WPCampus_showcase_rest {
 	public function get_sites( $request ) {
 		if( !isset($request['amount']) ){
 			$request['amount'] = 3; 
-		}		
+		}
 		return $this->get_site($request);
 	}
 
