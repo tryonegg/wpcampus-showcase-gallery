@@ -124,8 +124,8 @@ class WPCampus_showcase_rest {
 	        "organization" => get_post_meta($post->ID, $this->get_prefix() . 'organization', true),
 	        "team" => get_post_meta($post->ID, $this->get_prefix() . 'team', true),
    			"description" => wpautop( $post->post_content ),
-			"thumbnail" => get_the_post_thumbnail_url( $post->ID, 'fom-large' ),
-			"thumbnailsrc" => get_the_post_thumbnail( $post->ID, 'fom-large' ),
+			"thumbnail" => get_the_post_thumbnail_url( $post->ID, 'showcase' ),
+			"thumbnailsrc" => get_the_post_thumbnail( $post->ID, 'showcase' ),
 			"type" => $this->objtoarray( $this->termmap( wp_get_post_terms( $post->ID, 'type', array( "fields" => "all" ) ) ) ),
 
 
